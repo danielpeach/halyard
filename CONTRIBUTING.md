@@ -33,6 +33,8 @@ and then point IntelliJ at the generated project. You shouldn't need to import
 this project, simply navigating to __File__ > __Open__ > _the project's root
 directory_ should be enough.
 
+You should also install Intellij's [Lombok plugin](https://plugins.jetbrains.com/idea/plugin/6317-lombok-plugin).
+
 ## Running the Daemon
 
 In the project's root directory run:
