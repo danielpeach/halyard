@@ -16,17 +16,15 @@
 
 package com.netflix.spinnaker.halyard.config.validate.v1.providers.google;
 
-import com.amazonaws.util.IOUtils;
 import com.netflix.spinnaker.clouddriver.google.ComputeVersion;
 import com.netflix.spinnaker.clouddriver.google.security.GoogleNamedAccountCredentials;
 import com.netflix.spinnaker.halyard.config.model.v1.node.Validator;
-import com.netflix.spinnaker.halyard.config.model.v1.problem.Problem;
 import com.netflix.spinnaker.halyard.config.model.v1.problem.Problem.Severity;
 import com.netflix.spinnaker.halyard.config.model.v1.problem.ProblemSetBuilder;
 import com.netflix.spinnaker.halyard.config.model.v1.providers.google.GoogleAccount;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+
+import com.netflix.spinnaker.halyard.config.validate.v1.providers.appengine.FilePathValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,24 +35,16 @@ public class GoogleAccountValidator extends Validator<GoogleAccount> {
 
   @Override
   public void validate(ProblemSetBuilder p, GoogleAccount n) {
-    String jsonKey = null;
     String jsonPath = n.getJsonPath();
     String project = n.getProject();
     GoogleNamedAccountCredentials credentials = null;
-
-    try {
-      if (jsonPath != null && !jsonPath.isEmpty()) {
-        jsonKey = IOUtils.toString(new FileInputStream(n.getJsonPath()));
-
-        if (jsonKey.isEmpty()) {
-          p.addProblem(Severity.WARNING, "The supplied credentials file is empty.");
-        }
-      }
-    } catch (FileNotFoundException e) {
-      p.addProblem(Severity.ERROR, "Json path not found: " + e.getMessage() + ".");
-    } catch (IOException e) {
-      p.addProblem(Severity.ERROR, "Error opening specified json path: " + e.getMessage() + ".");
-    }
+    
+    String jsonKey = new FilePathValidator()
+            .setFilePath(jsonPath)
+            .setEmptyWarningMessage("The supplied credentials file is empty")
+            .setNotFoundErrorMessage("Json path not found")
+            .setIoExceptionErrorMessage("Error opening specified json path")
+            .validateAndReturnFileContents();
 
     if (n.getProject() == null || n.getProject().isEmpty()) {
       p.addProblem(Severity.ERROR, "No google project supplied.");

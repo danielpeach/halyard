@@ -24,7 +24,6 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class AppengineAccount extends CommonGoogleAccount {
-  private String serviceAccountEmail;
   private String localRepositoryDirectory;
   private String gitHttpsUsername;
   private String gitHttpsPassword;

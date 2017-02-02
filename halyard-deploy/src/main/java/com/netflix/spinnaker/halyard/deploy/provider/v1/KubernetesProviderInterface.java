@@ -412,7 +412,8 @@ public class KubernetesProviderInterface extends ProviderInterface<KubernetesAcc
         account.getContext(),
         account.getCluster(),
         account.getUser(),
-        account.getNamespaces());
+        account.getNamespaces(), 
+        false);
 
     return new DefaultKubernetesClient(config);
   }
